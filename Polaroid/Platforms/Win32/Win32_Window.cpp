@@ -42,12 +42,13 @@ namespace Polaroid
 		}
 	}
 
-	void Window::Close()
+	void Window::Destroy()
 	{
 		if (m_Handle != nullptr)
 		{
 			DestroyWindow(m_Handle);
 			m_Handle = nullptr;
+			m_IsDestroyed = true;
 		}
 	}
 

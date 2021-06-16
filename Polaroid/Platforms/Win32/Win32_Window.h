@@ -1,6 +1,7 @@
 #pragma once
 #include "../Commons/PlatformData.h"
 #include "../Commons/WindowDescription.h"
+#include "../Commons/EventQueue.h"
 #include <Windows.h>
 
 namespace Polaroid
@@ -22,13 +23,15 @@ namespace Polaroid
 		void SetTitle(const std::string& newTitle);
 		const std::string& RetrieveTitle() const { m_Title; }
 
-		void Close();
+		const bool IsDestroyed() const { return m_IsDestroyed; }
+		void Destroy();
 
 	private:
 		wchar_t* ConvertToLPCWSTR(const char* charArray);
 
 	private:
 		std::string m_Title = "Polaroid";
+		bool m_IsDestroyed = false;
 
 		// Application Instance
 		HINSTANCE m_Instance;

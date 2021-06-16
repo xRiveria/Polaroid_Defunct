@@ -4,17 +4,13 @@
 
 # Polaroid
 
-A cross-platform system abstraction library for managing windows and performing OS tasks. 
+A cross-platform system abstraction library for managing windows and performing OS tasks.
 
 ## Features
 
 - Simple Window, File Dialog, and Message Dialog Creation
 
 - Basic Input (Keyboard, Mouse, Touch, and Gamepad)
-
-- Platform specific features (Mac Transparency, Mobile Accelerometer, etc.)
-
-- Unit Tests + Test Coverage ([Appveyor][appveyor-url] for **Windows**, [CircleCI][circleci-url] for **Android / MacOS / iOS**, [Travis][travis-url] for **Linux/Noop**)
 
 - Well maintained C++ 14 with a promise to evolve as the standard evolves. (C++ Modules, Package Managers, etc.)
 

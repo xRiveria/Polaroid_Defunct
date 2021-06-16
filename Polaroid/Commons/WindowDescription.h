@@ -5,6 +5,14 @@ namespace Polaroid
 {
 	struct WindowDescription
 	{
+		// Transform
+		uint32_t m_Width = 1920;				   // Current Window Width
+		uint32_t m_Height = 1080;				   // Current Window Height
+		uint32_t m_WidthMinimum = 0;			   // Minimum Window Width
+		uint32_t m_HeightMinimum = 0;			   // Minimum Window Height
+		uint32_t m_WidthMaximum = 0xFFFF;		   // Maximum Window Width
+		uint32_t m_HeightMaximum = 0xFFF;		   // Maximum Window Height
+
 		// Window Settings
 		bool m_IsCentered = true;				   // Should the window be centered upon creation?
 		bool m_IsResizable = true;				   // Is the window resizable?
