@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Logo.png" alt="Logo"/>
+  <img src="Documentation\Logo.png" alt="Logo"/>
 </p>
 
 # Polaroid
@@ -16,7 +16,7 @@ A cross-platform system abstraction library for managing windows and performing 
 
 - Unit Tests + Test Coverage ([Appveyor][appveyor-url] for **Windows**, [CircleCI][circleci-url] for **Android / MacOS / iOS**, [Travis][travis-url] for **Linux/Noop**)
 
-- Well maintained C++ 11 with a promise to evolve as the standard evolves. (C++ Modules, Package Managers, etc.)
+- Well maintained C++ 14 with a promise to evolve as the standard evolves. (C++ Modules, Package Managers, etc.)
 
 ### Supported Platforms
 
