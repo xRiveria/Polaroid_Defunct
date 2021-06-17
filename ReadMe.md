@@ -8,10 +8,12 @@ A cross-platform system abstraction library for managing windows and performing 
 
 ## Features
 
-- Simple Window, File Dialog, and Message Dialog Creation
+- Window, File Dialog, and Message Dialog Creation.
 
-- Basic Input (Keyboard, Mouse, Touch, and Gamepad)
+- Event Queue System (Keyboard, Mouse, Touch, and Gamepad).
 
+- No external dependencies. Use Polaroid with a **single header** include and **two function calls** right within your codebase.
+ 
 - Well maintained C++ 14 with a promise to evolve as the standard evolves. (C++ Modules, Package Managers, etc.)
 
 ### Supported Platforms
