@@ -2,7 +2,7 @@
 
 namespace Polaroid
 {
-    ModifierState::ModifierState(bool ctrlPressed = false, bool altPressed = false, bool shiftPressed = false, bool superPressed = false) : m_Control(ctrlPressed), m_Alt(altPressed), m_Shift(shiftPressed), m_Super(superPressed)
+    ModifierState::ModifierState(bool ctrlPressed, bool altPressed, bool shiftPressed , bool superPressed) : m_Control(ctrlPressed), m_Alt(altPressed), m_Shift(shiftPressed), m_Super(superPressed)
     {
 
     }
