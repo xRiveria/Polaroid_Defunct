@@ -16,6 +16,8 @@ A cross-platform system abstraction library for managing windows and performing 
  
 - Well maintained C++ 14 with a promise to evolve as the standard evolves. (C++ Modules, Package Managers, etc.)
 
+- Annotated code for usability and study.
+
 ### Supported Platforms
 
 - Windows (Win32)

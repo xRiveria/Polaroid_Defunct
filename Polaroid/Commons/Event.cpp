@@ -46,4 +46,48 @@ namespace Polaroid
     {
 
     }
+
+    Event::Event(EventType type, Window* window)
+    {
+    }
+
+    Event::Event(FocusData focusData, Window* window)
+    {
+
+    }
+
+    Event::Event(ResizeData resizeData, Window* window)
+    {
+
+    }
+
+    Event::Event(KeyboardData keyboardData, Window* window)
+    {
+
+    }
+
+    Event::Event(MouseMoveData mouseMoveData, Window* window)
+    {
+
+    }
+
+    Event::Event(MouseRawData mouseRawData, Window* window)
+    {
+
+    }
+
+    Event::Event(MouseInputData mouseInputData, Window* window)
+    {
+
+    }
+
+    Event::Event(MouseWheelData mouseWheelData, Window* window)
+    {
+
+    }
+
+    Event::Event(DPIData dpiData, Window* window)
+    {
+
+    }
 }

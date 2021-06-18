@@ -6,5 +6,7 @@
 #define POLAROID_DEBUG
 
 #ifdef POLAROID_DEBUG
-#define POLAROID_INFO(text) std::cout << text << "\n";
+#define POLAROID_INFO(text) std::cout << "[INFO] " << text << "\n";
+#define POLAROID_ERROR(text) std::cout << "[ERROR] " << text << "\n";
+#define POLAROID_ASSERT(expression) if (!(##expression)) { POLAROID_ERROR(#expression) __debugbreak(); }
 #endif
