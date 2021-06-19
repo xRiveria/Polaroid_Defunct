@@ -10,6 +10,12 @@ namespace Polaroid
         m_IsInitialized = true;
     }
 
+    /* Procedures
+     
+        1) Tick message queue. If an event is received, we will dispatch the message to the window. This will return an LRESULT which changes depending on the dispatched message (or event).
+        2) Pass the message into a switch statement which discerns the type of event it is. We will retrieve the needed parameters for us to inject information into our own event data structures.
+        3) Pass along these event data structures back to our Window class for execution.  
+    */
     void EventQueue::Tick()
     {
         /*

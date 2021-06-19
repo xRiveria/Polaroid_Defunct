@@ -21,13 +21,13 @@ namespace Polaroid
 		#define ARGUMENTS HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow
 		#define ARGUMENTS_DEFINITION hInstance, hPrevInstance, lpCmdLine, nCmdShow
 
-		HINSTANCE m_hInstance;
+		HINSTANCE m_HINSTANCE;
 		HINSTANCE m_hPrevInstance;
 		LPSTR	  m_lpCmdLine;
 		int		  m_nCmdShow;
 
 		PlatformData() = default;
-		PlatformData(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) : m_hInstance(hInstance), m_hPrevInstance(hPrevInstance), m_lpCmdLine(lpCmdLine), m_nCmdShow(nCmdShow)
+		PlatformData(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) : m_HINSTANCE(hInstance), m_hPrevInstance(hPrevInstance), m_lpCmdLine(lpCmdLine), m_nCmdShow(nCmdShow)
 		{
 
 		}

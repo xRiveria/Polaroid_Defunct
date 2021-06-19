@@ -10,6 +10,7 @@ namespace Polaroid
     
     class EventQueue
     {
+    public:
         EventQueue();
 
         void Tick();
