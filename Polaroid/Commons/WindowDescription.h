@@ -6,6 +6,8 @@ namespace Polaroid
     struct WindowDescription
     {
         // Transform
+        long m_X = 0;                              // Window X Position
+        long m_Y = 0;                              // Window Y Position
         uint32_t m_Width = 1920;                   // Current Window Width
         uint32_t m_Height = 1080;                  // Current Window Height
         uint32_t m_WidthMinimum = 0;               // Minimum Window Width

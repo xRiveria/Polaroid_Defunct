@@ -28,6 +28,7 @@ namespace Polaroid
     {
     public:
         Event(EventType type, Window* window);
+        ~Event() {}
 
         // =====
         Event(FocusData focusData, Window* window);
@@ -40,7 +41,7 @@ namespace Polaroid
         Event(DPIData dpiData, Window* window);
 
         const EventType RetrieveEventType() const { return m_Type; }
-        const EventData& RetrieveEventData() const { return m_Data; }
+        EventData& RetrieveEventData() { return m_Data; }
         const uint32_t RetrieveTimestamp() const { return m_Timestamp; }
 
     private:
@@ -48,6 +49,6 @@ namespace Polaroid
         EventData m_Data;       // The event data.
         Window* m_Window;       // Pointer to a Polaroid window.
 
-        uint32_t m_Timestamp;   // The timestamp of the event.
+        uint32_t m_Timestamp = 0;   // The timestamp of the event.
     };
 }

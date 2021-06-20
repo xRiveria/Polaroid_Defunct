@@ -1,6 +1,9 @@
 #include "Win32_Window.h"
+#include <ShObjIdl_core.h>
+#include <dwmapi.h>
+#pragma comment(lib, "dwmapi.lib")
 
-// To be safe, use Windows data types whenever possible. This is because their range/formats are what Windows functions rely on. See :https://stackoverflow.com/questions/2995251/why-in-c-do-we-use-dword-rather-than-unsigned-int
+// To be safe, use Windows data types whenever possible. This is because their range/formats are what Windows functions rely on. See: https://stackoverflow.com/questions/2995251/why-in-c-do-we-use-dword-rather-than-unsigned-int
 
 HBRUSH g_hBrush = CreateSolidBrush(RGB(30, 30, 30));
 
@@ -20,7 +23,7 @@ namespace Polaroid
 	}
 
 	// A WndProc (Windows Procedure) must be created and is used to determine how your application will respond to various events. It may very well be called an Event Handler. After all, it responds to events!
-	bool Window::Create(const WindowDescription& windowDescription, EventQueue& eventQueue)
+	bool Window::Create(WindowDescription& windowDescription, EventQueue& eventQueue)
 	{
 		m_EventQueue = &eventQueue;
 		const PlatformData& platformData = RetrievePlatformData();
@@ -31,6 +34,7 @@ namespace Polaroid
 		int nCmdShow = platformData.m_nCmdShow;                   // Used to determine how your application's window will be displayed once it begins executing.
 
 		m_Description = windowDescription;
+		const LPCWSTR className = ConvertToLPCWSTR(m_Description.m_Name).c_str();
 
 		// Contains window class information. It is used with the RegisterClassEx function.
 		WNDCLASSEX wndClass = {};
@@ -44,7 +48,7 @@ namespace Polaroid
 		wndClass.hCursor = LoadCursor(NULL, IDC_ARROW);			  // Handle to a cursor resource. If NULL, an application must explictly set the cursor shape whenever the mouse moves into the application's window.
 		wndClass.hbrBackground = g_hBrush;						  // Handle to the class background brush. It can be a color value or a handle to the brush to be used for painting the background.
 		wndClass.lpszMenuName = NULL;							  // Pointer to a null-terminated character string that specifies the resource name of the class menu, as the name appears in the resource file.
-		wndClass.lpszClassName = ConvertToLPCWSTR(m_Description.m_Name.c_str()); // Pointer to a null-terminated string.
+		wndClass.lpszClassName = className; // Pointer to a null-terminated string.
 		wndClass.hIconSm = LoadIcon(NULL, IDI_WINLOGO);			  // A handle to a small icon that is associated with the window class. If this is NULL, the system searches the icon resource specified by the hIcon member for an icon of the appropriate size to use as the small icon.
 
 		if (!RegisterClassEx(&wndClass)) // Registers a window class for subsequent use in calls to the CreateWindow or CreateWindowEx function. 
@@ -85,25 +89,59 @@ namespace Polaroid
 		DWORD dwExStyle = 0;
 		DWORD dwStyle = 0;
 
+		// See flag definitions here: https://docs.microsoft.com/en-us/windows/win32/winmsg/extended-window-styles.
 		if (m_Description.m_IsFullscreen)
 		{
-			dwExStyle = WS_EX_APPWINDOW; // Forces a top-level window onto the taskbar when the window is visible.
+			dwExStyle = WS_EX_APPWINDOW;
 			dwStyle = WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN; // Specifies that the window is a pop-up window, is initially visible, clips child windows relative to each other and excludes the area occupied by child windows when drawing occurs within the parent window.
 		}
 		else
 		{
-
+			dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE; // Window has a border with a raised edge.
+			dwStyle = WS_SYSMENU | WS_CAPTION | WS_OVERLAPPED | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX; // Specifies that the window has a window menu on its title bar, has a title bar (hence must be enabled for WS_SYSMENU), is an overlapped window (which has a title bar and border), has a sizing border and has a minimize/maximize button.
 		}
 
-		// Rect.
+		RECT windowRect;
+		windowRect.left = m_Description.m_X;
+		windowRect.top = m_Description.m_Y;
+		windowRect.right = m_Description.m_IsFullscreen ? (long)screenWidth : (long)m_Description.m_Width;
+		windowRect.bottom = m_Description.m_IsFullscreen ? (long)screenHeight : (long)m_Description.m_Height;
 
+		// Calculates the required size of the window rectangle based on the desired size of the client rectangle. The window rectangle can then be passed to the CreateWindowEx function to create a window whose client area is the desired size.
+		AdjustWindowRectEx(&windowRect, dwStyle, FALSE, dwExStyle); // Pointer to a Rect of the desired client area, window style of the window, indicates whether the window has a menu and the extended window style of the window.
 
-		// Create Window
+		g_WindowInCreation = this;
+		m_HWND = CreateWindowEx(0, className, ConvertToLPCWSTR(m_Description.m_Title).c_str(), dwStyle, 0, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, NULL, NULL, m_HINSTANCE, NULL);
+
+		BOOL isNonClientRenderingEnabled{ TRUE };
+		// Specifies window attributes for Desktop Window Manager (DWM) non-client rendering.
+		DwmSetWindowAttribute(m_HWND, DWMWA_NCRENDERING_ENABLED, &isNonClientRenderingEnabled, sizeof(isNonClientRenderingEnabled)); // Discovers whether non-client rendering is enabled. Note that this refers to non-client area of a window, such as the title bar, menu bar or window frame. A WM_NCPAINT message is sent whenever such areas must be updated.
 
 		if (!m_HWND)
 		{
 			POLAROID_ERROR("Failed to create window.");
 		}
+
+		// Windows loves its specification checks. Thus, we will continue making sure that m_HWND isn't nullptr or else Windows will throw warnings at us.
+
+		if (!m_Description.m_IsFullscreen && m_HWND != nullptr) 
+		{
+			// Center on screen.
+			uint32_t x = (GetSystemMetrics(SM_CXSCREEN) - windowRect.right) / 2;
+			uint32_t y = (GetSystemMetrics(SM_CYSCREEN) - windowRect.bottom) / 2;
+			SetWindowPos(m_HWND, 0, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE); // Retains the current Z order and current size.		
+		}
+
+		if (m_Description.m_IsVisible && m_HWND != nullptr)
+		{
+			ShowWindow(m_HWND, SW_SHOW); // Activates the window and displays it in its current size and position. 
+			SetForegroundWindow(m_HWND); // Brings the thread that created the specified window into the foreground and activates the window. Keyboard input is directed to the window, and various visual cues are changed for the user. See: https://stackoverflow.com/questions/3940346/foreground-vs-active-window/28643729
+			SetFocus(m_HWND);			 // Sets the keyboard focus to the specified window.
+		}
+
+		// Blur behind?
+
+		return true;
 	}
 
 	void Window::SetSize(const uint32_t newWidth, const uint32_t newHeight)
@@ -128,11 +166,8 @@ namespace Polaroid
 
 	void Window::SetTitle(const std::string& newTitle)
 	{
-		if (wchar_t* titleInWideString = ConvertToLPCWSTR(newTitle.c_str()))
-		{
-			SetWindowText(m_HWND, titleInWideString);
-			m_Title = newTitle;
-		}
+		SetWindowText(m_HWND, ConvertToLPCWSTR(newTitle).c_str());
+		m_Title = newTitle;
 	}
 
 	void Window::Destroy()
@@ -197,10 +232,14 @@ namespace Polaroid
 		return DefWindowProc(m_HWND, msg, wParam, lParam); // Internally returns an LRESULT which is inherently the result of the message processing and differs based on the message.
 	}
 
-	wchar_t* Window::ConvertToLPCWSTR(const char* charArray) 
+	std::wstring Window::ConvertToLPCWSTR(const std::string& string) 
 	{
-		wchar_t* wideString = new wchar_t[4096];
-		MultiByteToWideChar(CP_ACP, 0, charArray, -1, wideString, 4096);
-		return wideString;
+		const int stringLength = static_cast<int>(string.length() + 1); // For null-terminated character.
+		const int wideStringLength = MultiByteToWideChar(CP_ACP, 0, string.c_str(), stringLength, nullptr, 0);
+		wchar_t* const wideStringBuffer = new wchar_t[wideStringLength];
+		MultiByteToWideChar(CP_ACP, 0, string.c_str(), stringLength, wideStringBuffer, wideStringLength);
+		std::wstring result(wideStringBuffer);
+		delete[] wideStringBuffer;
+		return result;
 	}
 }

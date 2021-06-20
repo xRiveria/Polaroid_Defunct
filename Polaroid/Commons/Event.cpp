@@ -47,47 +47,48 @@ namespace Polaroid
 
     }
 
-    Event::Event(EventType type, Window* window)
+    Event::Event(EventType type, Window* window) : m_Type(type), m_Window(window)
     {
+        
     }
 
-    Event::Event(FocusData focusData, Window* window)
+    Event::Event(FocusData focusData, Window* window) : m_Type(EventType::Focus), m_Window(window)
     {
-
+        m_Data.m_Focus_Data = focusData;
     }
 
-    Event::Event(ResizeData resizeData, Window* window)
+    Event::Event(ResizeData resizeData, Window* window) : m_Type(EventType::Resize), m_Window(window)
     {
-
+        m_Data.m_Resize_Data = resizeData;
     }
 
-    Event::Event(KeyboardData keyboardData, Window* window)
+    Event::Event(KeyboardData keyboardData, Window* window) : m_Type(EventType::Keyboard), m_Window(window)
     {
-
+        m_Data.m_Keyboard_Data = keyboardData;
     }
 
-    Event::Event(MouseMoveData mouseMoveData, Window* window)
+    Event::Event(MouseMoveData mouseMoveData, Window* window) : m_Type(EventType::MouseMoved), m_Window(window)
     {
-
+        m_Data.m_MouseMove_Data = mouseMoveData;
     }
 
-    Event::Event(MouseRawData mouseRawData, Window* window)
+    Event::Event(MouseRawData mouseRawData, Window* window) : m_Type(EventType::MouseMoved), m_Window(window)
     {
-
+        m_Data.m_MouseRaw_Data = mouseRawData;
     }
 
-    Event::Event(MouseInputData mouseInputData, Window* window)
+    Event::Event(MouseInputData mouseInputData, Window* window) : m_Type(EventType::MouseInput), m_Window(window)
     {
-
+        m_Data.m_MouseInput_Data = mouseInputData;
     }
 
-    Event::Event(MouseWheelData mouseWheelData, Window* window)
+    Event::Event(MouseWheelData mouseWheelData, Window* window) : m_Type(EventType::MouseWheel), m_Window(window)
     {
-
+        m_Data.m_MouseWheel_Data = mouseWheelData;
     }
 
-    Event::Event(DPIData dpiData, Window* window)
+    Event::Event(DPIData dpiData, Window* window) : m_Type(EventType::DPI), m_Window(window)
     {
-
+        m_Data.m_DPI_Data = dpiData;
     }
 }

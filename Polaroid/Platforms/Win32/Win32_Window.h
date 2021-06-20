@@ -10,7 +10,6 @@
 static thread_local Polaroid::Window* g_WindowInCreation = nullptr;
 static thread_local std::unordered_map<HWND, Polaroid::Window*> g_HWNDMap = {};
 
-/// Stop new on wide string creation.
 namespace Polaroid
 {
 	struct WindowDescription;
@@ -22,7 +21,7 @@ namespace Polaroid
 		~Window();
 
 		// Window Actions
-		bool Create(const WindowDescription& windowDescription, EventQueue& eventQueue);
+		bool Create(WindowDescription& windowDescription, EventQueue& eventQueue);
 		void SetSize(const uint32_t newWidth, const uint32_t newHeight);
 		void Maximize();
 		void Minimize();
@@ -53,7 +52,7 @@ namespace Polaroid
 		std::function<void(const Polaroid::Event& event)> m_EventCallback;
 
 	private:
-		wchar_t* ConvertToLPCWSTR(const char* charArray);
+		std::wstring ConvertToLPCWSTR(const std::string& string);
 
 	private:
 		std::string m_Title = "Polaroid";

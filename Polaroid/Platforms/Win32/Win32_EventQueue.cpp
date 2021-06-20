@@ -5,6 +5,8 @@
 
 namespace Polaroid
 {
+    const char* EventTypeToChar[static_cast<uint8_t>(EventType::EventTypeMax)] = { "None", "Close", "Create", "Focus", "Paint", "Resize", "DPI", "Keyboard", "MouseMoved", "MouserRaw", "MouseWheel", "MouseInput", "Touch", "Gamepad" };
+
     EventQueue::EventQueue()
     {
         m_IsInitialized = true;
@@ -121,16 +123,88 @@ namespace Polaroid
                 event = Polaroid::Event(Polaroid::FocusData(false), window);
                 break;
             }
+            case WM_MOUSEWHEEL:
+            {
+                short modifiers = LOWORD(incomingMessage.wParam);
+                event = Polaroid::Event(Polaroid::MouseWheelData(GET_WHEEL_DELTA_WPARAM(incomingMessage.wParam) / WHEEL_DELTA, Polaroid::ModifierState(modifiers & MK_CONTROL, modifiers & MK_ALT, modifiers & MK_SHIFT, modifiers & 0)), window);
+                break;
+            }
+            case WM_LBUTTONDOWN:
+            {
+                short modifiers = LOWORD(incomingMessage.wParam);
+                event = Polaroid::Event(Polaroid::MouseInputData(MouseInput::Left, ButtonState::Pressed, Polaroid::ModifierState(modifiers & MK_CONTROL, modifiers & MK_ALT, modifiers & MK_SHIFT, modifiers & 0)), window);
+                break;
+            }
+            case WM_MBUTTONDOWN:
+            {
+                short modifiers = LOWORD(incomingMessage.wParam);
+                event = Polaroid::Event(Polaroid::MouseInputData(MouseInput::Middle, ButtonState::Pressed, Polaroid::ModifierState(modifiers & MK_CONTROL, modifiers & MK_ALT, modifiers & MK_SHIFT, modifiers & 0)), window);
+                break;
+            }
+            case WM_RBUTTONDOWN:
+            {
+                short modifiers = LOWORD(incomingMessage.wParam);
+                event = Polaroid::Event(Polaroid::MouseInputData(MouseInput::Right, ButtonState::Pressed, Polaroid::ModifierState(modifiers & MK_CONTROL, modifiers & MK_ALT, modifiers & MK_SHIFT, modifiers & 0)), window);
+                break;
+            }
+            case WM_LBUTTONUP:
+            {
+                short modifiers = LOWORD(incomingMessage.wParam);
+                event = Polaroid::Event(Polaroid::MouseInputData(MouseInput::Left, ButtonState::Released, Polaroid::ModifierState(modifiers & MK_CONTROL, modifiers & MK_ALT, modifiers & MK_SHIFT, modifiers & 0)), window);
+            }
+            case WM_MBUTTONUP:
+            {
+                short modifiers = LOWORD(incomingMessage.wParam);
+                event = Polaroid::Event(Polaroid::MouseInputData(MouseInput::Middle, ButtonState::Released, Polaroid::ModifierState(modifiers & MK_CONTROL, modifiers & MK_ALT, modifiers & MK_SHIFT, modifiers & 0)), window);
+            }
+            case WM_RBUTTONUP:
+            {
+                short modifiers = LOWORD(incomingMessage.wParam);
+                event = Polaroid::Event(Polaroid::MouseInputData(MouseInput::Right, ButtonState::Released, Polaroid::ModifierState(modifiers & MK_CONTROL, modifiers & MK_ALT, modifiers & MK_SHIFT, modifiers & 0)), window);
+            }
+            case WM_INPUT:
+            {
+                ///
+                event = Polaroid::Event(Polaroid::MouseRawData(0, 0), window);
+                break;
+            }
+
             case WM_SIZING:       // Sent to a window that the user is resizing. By processing this message, an application can monitor the size and position of the drag rectangle and if needed, change its size or position.
             {
+                ///
+                event = Polaroid::Event(ResizeData(0, 0, true), window);
                 break;
             }
+
             case WM_SIZE:         // Sent to a window after its size has changed.
+            {
+                ///
+                event = Polaroid::Event(ResizeData(0, 0, true), window);
+                break;
+            }
+            case WM_MOUSEMOVE:
+            {
+                ///
+                event = Polaroid::Event(MouseMoveData(0, 0, 0, 0, 0, 0), window);
+                break;
+            }
+            case WM_SYSKEYUP:
+            {
+                ///
+                event = Polaroid::Event(KeyboardData(Key::D, ButtonState::Pressed, ModifierState(0, 0, 0, 0)), window);
+                break;
+            }
+            case WM_NCHITTEST:
             {
                 break;
             }
+            case WM_NCCALCSIZE:
+            {
+                break;
+            }
+
             /*
-                Sent when the effective dots per inch (DPI) for a window has changwed. The DPI is the scale factor for a window. There are multiple events that can cause the DPI to change.
+                Sent when the effective dots per inch (DPI) for a window has changed. The DPI is the scale factor for a window. There are multiple events that can cause the DPI to change.
                 Some possible changes are:
 
                 - The window is moved to a new monitor that has a different DPI.
@@ -162,7 +236,15 @@ namespace Polaroid
             }
         }
 
-        POLAROID_ASSERT(event.RetrieveEventType() != EventType::None);
+        if (event.RetrieveEventType() == EventType::None)
+        {
+            POLAROID_INFO("Detected unsupported event.");
+        }
+        else
+        {
+            POLAROID_INFO(EventTypeToChar[static_cast<uint8_t>(event.RetrieveEventType())]);
+        }
+
         m_Queue.emplace(event);
         window->ExecuteEventCallback(event);
 
